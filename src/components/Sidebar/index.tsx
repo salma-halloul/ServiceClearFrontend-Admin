@@ -33,7 +33,7 @@ const menuGroups = [
           </svg>
         ),
         label: "Dashboard",
-        route: "#",
+        route: "/admin/dashboard",
       },
       {
         icon: (
@@ -57,8 +57,8 @@ const menuGroups = [
         label: "Services",
         route: "#",
         children: [
-          { label: "Add Service", route: "/services" },
-          { label: "Services", route: "/services/add-service" },
+          { label: "Add Service", route: "/admin/services/add-service" },
+          { label: "Services", route: "/admin/services/all-services" },
         ],
       },
       {
@@ -98,7 +98,7 @@ const menuGroups = [
           </svg>
         ),
         label: "Categories",
-        route: "/categories",
+        route: "/admin/categories",
       },
       {
         icon: (
@@ -115,7 +115,7 @@ const menuGroups = [
           </svg>
         ),
         label: "Reviews",
-        route: "#",
+        route: "/admin/reviews",
       },
       {
         icon: (
@@ -136,7 +136,7 @@ const menuGroups = [
           </svg>
         ),
         label: "Quotes",
-        route: "/quotes",
+        route: "/admin/quotes",
       },
       {
         icon: (
@@ -157,7 +157,7 @@ const menuGroups = [
           </svg>
         ),
         label: "Messages",
-        route: "/messages",
+        route: "/admin/messages",
       },
     ],
   },
@@ -196,7 +196,7 @@ const menuGroups = [
             </defs>
           </svg>        ),
         label: "Settings",
-        route: "/settings",
+        route: "/admin/settings",
       },
     ],
   },
@@ -208,7 +208,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <ClickOutside onClick={() => setSidebarOpen(false)}>
       <aside
-        className={`fixed left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:translate-x-0 ${
+        className={`fixed left-0 top-0 z-999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

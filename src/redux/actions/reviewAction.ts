@@ -39,3 +39,18 @@ export const addReview = createAsyncThunk(
     }
   }
 );
+
+export const deleteMultipleReviews = createAsyncThunk(
+  'reviews/deleteReviews',
+  async (ids: string[], thunkAPI) => {
+    try {
+      const response = await axiosInstance.delete('/review/delete', { data: { ids } });
+      console.log('API response:', response); 
+
+      return response.data;
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Error deleting reviews';
+      return thunkAPI.rejectWithValue(errorMessage);
+    }
+  }
+);

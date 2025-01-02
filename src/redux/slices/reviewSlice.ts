@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { addReview, fetchReviews, updateReview } from '../actions/reviewAction';
+import { addReview, deleteMultipleReviews, fetchReviews, updateReview } from '../actions/reviewAction';
 
 interface ReviewState {
-  reviews: any[];
+  reviews: Review[];
   loading: boolean;
   error: string | null;
   status: "idle" | "loading" | "failed";
@@ -70,11 +70,24 @@ const reviewSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string || 'Failed to add review';
         state.status = "failed";
+      })
+
+      .addCase(deleteMultipleReviews.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteMultipleReviews.fulfilled, (state, action) => {
+        state.loading = false;
+        if (Array.isArray(action.payload.ids) && action.payload.ids.every((id: number) => typeof id === 'number')) {
+          state.reviews = state.reviews.filter(review => !action.payload.ids.includes(review.id));
+        } else {
+          state.error = 'Invalid payload structure';
+        }
+      })
+      .addCase(deleteMultipleReviews.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string || 'Failed to delete service';
       });
-
-
-
-
   },
 });
 

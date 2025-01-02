@@ -241,3 +241,19 @@ input[type="search"]::-webkit-search-cancel-button {
 [x-cloak] {
     display: none !important;
 }
+
+.star-small {
+    font-size: 6px;
+}
+
+@media (min-width: 1024px) { /* lg breakpoint */
+    .star-small {
+        font-size: 13px;
+    }
+}
+
+@media (min-width: 1280px) { /* xl breakpoint */
+    .star-small {
+        font-size: 16px;
+    }
+}

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
+import { ToastContainer } from "react-toastify";
 
 export default function DefaultLayout({
   children,
@@ -29,6 +30,7 @@ export default function DefaultLayout({
               {children}
             </div>
           </main>
+          <ToastContainer />
           {/* <!-- ===== Main Content End ===== --> */}
         </div>
         {/* <!-- ===== Content Area End ===== --> */}

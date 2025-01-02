@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {  getProfile } from '../actions/userAction';
+import {  getProfile, resetPassword, updateProfile } from '../actions/userAction';
+import { User } from '@/types/user';
 
 interface UserState {
   users: User[];
@@ -39,6 +40,30 @@ const userSlice = createSlice({
         state.error = action.payload as string || 'Failed to fetch profile';
         state.status = "failed";
       })
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string || 'Failed to update profile';
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string || 'Failed to reset password';
+      });
   },
 });
 

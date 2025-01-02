@@ -42,13 +42,38 @@ export const deleteMultipleQuotes = createAsyncThunk(
 );
 
 export const updateQuoteReadStatus = createAsyncThunk(
-  'Quotes/update',
+  'Quotes/updateReadStatus',
   async ({ id, read }: { id: string; read: boolean }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.put(`/quote/update`, { id, read });
       return response.data;
     } catch (error:any) {
       return rejectWithValue(error.response.data.message || 'Failed to update quote read status');
+    }
+  }
+);
+
+export const updateQuote = createAsyncThunk(
+  '/quote/update',
+  async (review: any, thunkAPI) => {
+    try {
+      const response = await axiosInstance.patch(`/quote/update-status`, review);
+      return response.data;
+    } catch (error: any) {
+      const errorMessage = error.response.data.message;
+      return thunkAPI.rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const fetchMonthlyRequestStatistics = createAsyncThunk(
+  'quote/fetchMonthlyRequestStatistics',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get('/quote/monthly-request');
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
     }
   }
 );

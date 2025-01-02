@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createService, deleteMultipleServices, fetchServiceById, fetchServices, updateService } from '../actions/serviceAction';
+import { Service } from '@/types/service';
 
 interface ServiceState {
   services: Service[];
@@ -75,7 +76,7 @@ const serviceSlice = createSlice({
       })
       .addCase(updateService.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.services.findIndex(service => service.id === action.payload.id);
+        const index = state.services.findIndex((service) => service.id === action.payload.id);
         if (index !== -1) {
           state.services[index] = action.payload;
         }

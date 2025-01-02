@@ -1,23 +1,23 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import authReducer from "./slices/authSlice";
-import productReducer from "./slices/serviceSlice";
+import serviceReducer from "./slices/serviceSlice";
 import categoryReducer from "./slices/categorySlice";
 import userReducer from "./slices/userSlice";
 import reviewReducer from "./slices/reviewSlice";
 import contactReducer from "./slices/contactSlice";
-import devisReducer from "./slices/quoteSlice";
+import quoteReducer from "./slices/quoteSlice";
 
 
 const store = configureStore({  
     reducer: {
       auth: authReducer,
-      product: productReducer,
+      service: serviceReducer,
       category: categoryReducer,
       user : userReducer,
       review : reviewReducer,
       contact : contactReducer,
-      devis : devisReducer,
+      quote : quoteReducer,
     },
   });
   

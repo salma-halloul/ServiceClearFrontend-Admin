@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {createCategory, deleteCategory, fetchAllCategories, updateCategory } from '../actions/categoryAction';
+import {countCategoriesInQuotes, createCategory, deleteCategory, fetchAllCategories, updateCategory } from '../actions/categoryAction';
 
 interface CategoryState {
   categories: Category[];
+  categoriesInQuotes: CategoryCount[];
   loading: boolean;
   error: string | null;
   status: "idle" | "loading" | "failed";
@@ -10,6 +11,7 @@ interface CategoryState {
 
 const initialState: CategoryState = {
   categories: [],
+  categoriesInQuotes: [],
   loading: false,
   error: null,
   status: "idle",
@@ -84,7 +86,22 @@ const categorySlice = createSlice({
         state.loading = false;
         state.error = action.payload as string || 'Failed to update category';
         state.status = "failed";
-      });
+      })
+      .addCase(countCategoriesInQuotes.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.status = "loading";
+      })
+      .addCase(countCategoriesInQuotes.fulfilled, (state, action) => {
+        state.loading = false;
+        state.categoriesInQuotes = action.payload;
+        state.status = "idle";
+      })
+      .addCase(countCategoriesInQuotes.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch categories In Quotes';
+        state.status = "failed";
+      })
       
   },
 });

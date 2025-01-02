@@ -52,3 +52,15 @@ async (category: Category, thunkAPI) => {
   }
 }
 );
+export const countCategoriesInQuotes = createAsyncThunk(
+  'categories/categoriesInQuotes',
+  async (_, thunkAPI) => {
+    try {
+      const response = await axiosInstance.get('/category/count');
+      return response.data;
+    } catch (error: any) {
+      const errorMessage = error.response.data.message;
+      return thunkAPI.rejectWithValue(errorMessage);
+    }
+  }
+);

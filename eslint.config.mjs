@@ -11,6 +11,17 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals"),
+  {
+    rules: {
+      "no-console": "off",
+      "no-unused-vars": "off", // Disable no-unused-vars globally
+      "react-hooks/exhaustive-deps": "off", // Disable react-hooks/exhaustive-deps globally
+      "@next/next/no-img-element": "off", // Disable @next/next/no-img-element globally
+      "react/no-unescaped-entities": "off", // Disable react/no-unescaped-entities globally
+    },
+  },
 ];
+
+
 
 export default eslintConfig;

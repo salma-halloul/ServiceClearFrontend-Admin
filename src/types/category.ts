@@ -6,3 +6,8 @@ interface Category {
 interface CreateCategory{
     name: string;
 }
+
+interface CategoryCount {
+    name: string;
+    count: number;
+}

@@ -1,8 +1,8 @@
 interface Review {
-    id: number;
+    id: string;
     rating: number;
     comment: string;
-    createdAt: Date;
+    createdAt: string;
     name: string;
-    status: String;
+    status: string;
 }
