@@ -11,6 +11,7 @@ import { fetchAllCategories } from "@/redux/actions/categoryAction";
 import { toast } from "react-toastify";
 import {fetchServiceById, updateService } from "@/redux/actions/serviceAction";
 import { useParams } from "next/navigation";
+import Image from "next/image";
 
 const EditServicePage = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -22,6 +23,7 @@ const EditServicePage = () => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [imagesBase64, setImagesBase64] = useState<string[]>([]);
+    const [shortDescription, setShortDescription] = useState<string>('');
     const [visible, setVisible] = useState(false);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
@@ -39,6 +41,7 @@ const EditServicePage = () => {
         if (service) {
           setName(service.name);
           setDescription(service.description);
+          setShortDescription(service.shortDescription);
           setImagesBase64(service.images);
           setVisible(service.visible);
           setSelectedCategories(service.categories?.map((cat: any) => cat.id));
@@ -73,6 +76,7 @@ const EditServicePage = () => {
           id: service?.id,
           name,
           description,
+          shortDescription,
           images: imagesBase64,
           visible,
           categoryIds: selectedCategories,
@@ -109,6 +113,19 @@ const EditServicePage = () => {
                                             required
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
+                                            type="text"
+                                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                                            Short Description
+                                        </label>
+                                        <input
+                                            required
+                                            value={shortDescription}
+                                            onChange={(e) => setShortDescription(e.target.value)}
                                             type="text"
                                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
@@ -229,7 +246,14 @@ const EditServicePage = () => {
                                     </div>
                                     <div className="mt-4 flex flex-wrap gap-2">
                                         {imagesBase64.map((image, index) => (
-                                            <img key={index} src={image} alt={`Service ${index + 1}`} className="w-20 h-20 object-cover rounded-md" />
+                                            <Image
+                                                key={index}
+                                                src={image}
+                                                alt={`Service ${index + 1}`}
+                                                width={80} 
+                                                height={80} 
+                                                className="object-cover rounded-md"
+                                            />
                                         ))}
                                     </div>
                                 </div>

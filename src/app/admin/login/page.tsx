@@ -6,6 +6,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import Image from "next/image";
 
 const LoginPage =() => {
     const [email, setEmail] = useState('');
@@ -20,17 +21,23 @@ const LoginPage =() => {
       event.preventDefault();
       try {
         await dispatch(login({ identifier: email, password })).unwrap();
-        router.push('/admin/categories');
+        router.push('/admin/dashboard');
       }  catch (error) {
         console.error('Login failed:', error);
       }
     };
   
     return (
+      
         <div className="flex flex-col items-center justify-center min-h-screen">
-                  <div className="mb-5 flex justify-center"> 
-           <img src="/images/logo.png" alt="Logo"  />
-       </div>
+        <div className="mb-5 flex justify-center">
+          <Image
+            width={350}
+            height={32}
+            src={"/images/logo.png"}
+            alt="Logo"
+          />
+        </div>
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">

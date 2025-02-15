@@ -3,6 +3,7 @@ export interface Service {
     createdAt: Date;
     name: string;
     description: string;
+    shortDescription: string;
     categoriesIds: number[];
     categories: Category[];
     visible: boolean;
@@ -12,6 +13,7 @@ export interface Service {
 export interface serviceData {
     name: string;
     description: string;
+    shortDescription: string;
     categoriesIds: number[];
     visible: boolean;
     images: string[];

@@ -16,8 +16,11 @@ const CategoriesPage = () => {
     const { categories, error } = useSelector((state: RootState) => state.category);
     const [isAddingCategory, setIsAddingCategory] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
+    const [newCategoryIcon, setNewCategoryIcon] = useState<string | null>(null); 
     const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
     const [editingCategoryName, setEditingCategoryName] = useState<string>('');
+    const [editingCategoryIcon, setEditingCategoryIcon] = useState<string>(''); 
+    const [editingIcon, setEditingIcon] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 
@@ -54,41 +57,85 @@ const CategoriesPage = () => {
 
     const handleSaveCategory = async () => {
       try {
-          await dispatch(createCategory({ name: newCategoryName })).unwrap();
-          toast.success('Category submitted successfully!');
+        if (!newCategoryName || !newCategoryIcon) {
+          toast.error('Please fill out all fields.');
+          return;
+        }
+        await dispatch(createCategory({ name: newCategoryName, icon: newCategoryIcon })).unwrap();
+        toast.success('Category submitted successfully!');
           setNewCategoryName('');
           setIsAddingCategory(false);
+          setNewCategoryIcon(null);
       } catch (error) {
           toast.error('Failed to submit category. Please try again.');
       }
   };
 
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setNewCategoryIcon(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+const handleEditIconUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0];
+  console.log('Selected file for editing:', file);
+  if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+          console.log('Edited icon as base64:', reader.result);
+          setEditingCategoryIcon(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+  }
+  setEditingIcon(false);
+};
+
+
+
     const handleCancelCategory = () => {
         setNewCategoryName('');
+        setNewCategoryIcon('');
         setIsAddingCategory(false);
     };
 
-    const handleEditCategory = (categoryId: string, categoryName: string) => {
-        setEditingCategoryId(categoryId);
-        setEditingCategoryName(categoryName);
-    };
-
-    const handleUpdateCategory = async () => {
-      if (editingCategoryId && editingCategoryName) {
-          try {
-              await dispatch(updateCategory({ id: editingCategoryId, name: editingCategoryName })).unwrap();
-              setEditingCategoryId(null);
-              setEditingCategoryName('');
-              toast.success('Category changed successfully!');
-          } catch (error) {
-              toast.error('Failed to update category. Please try again.');
-          }
-      }
+  const handleEditCategory = (categoryId: string, categoryName: string, categoryIcon: string ) => {
+    setEditingCategoryId(categoryId);
+    setEditingCategoryName(categoryName);
+    setEditingCategoryIcon(categoryIcon);
   };
+
+const handleUpdateCategory = async () => {
+    if (editingCategoryId) {
+        try {
+          if (!editingCategoryName || !editingCategoryIcon) {
+            console.error('Missing fields:', { editingCategoryName, editingCategoryIcon });
+            toast.error('Please fill out all fields.');
+            return;
+        }
+        console.log('Dispatching createCategory with:', { name: editingCategoryName, icon: editingCategoryIcon });
+
+            await dispatch(updateCategory({ id: editingCategoryId, name: editingCategoryName, icon: editingCategoryIcon })).unwrap();
+            setEditingCategoryId(null);
+            setEditingCategoryName('');
+            setEditingCategoryIcon('');
+            toast.success('Category updated successfully!');
+        } catch (error) {
+            toast.error('Failed to update category. Please try again.');
+        }
+    }
+};
+  
 
     const handleCancelEdit = () => {
       setEditingCategoryId(null);
       setEditingCategoryName('');
+      setEditingCategoryIcon('');
   };
 
   return (
@@ -120,6 +167,17 @@ const CategoriesPage = () => {
                 className="w-full rounded-md border border-gray-300 px-2 py-1 text-black text-xs lg:text-sm dark:border-strokedark dark:bg-gray-800 dark:text-white"
                 placeholder="New Category Name"
               />
+              <input
+                type="file"
+                accept=".svg"
+                onChange={handleFileUpload}
+                className="mt-2 w-full text-xs lg:text-sm"
+              />
+              {newCategoryIcon && (
+                <div className="mt-2">
+                  <img src={newCategoryIcon} alt="Icon Preview" className="w-16 h-16" />
+                </div>
+              )}
               <div className="flex justify-end space-x-2 mt-2">
                 <button
                   onClick={handleSaveCategory}
@@ -139,6 +197,9 @@ const CategoriesPage = () => {
           <table className="w-full table-auto">
             <thead>
               <tr className="bg-gray-2 text-left dark:bg-meta-4">
+                <th className="px-4 py-4 font-medium text-black text-sm lg:text-base dark:text-white">
+                  Icon
+                </th>
                 <th className="px-4 py-4  font-medium text-black text-sm lg:text-base dark:text-white xl:pl-11">
                   Name
                 </th>
@@ -150,6 +211,53 @@ const CategoriesPage = () => {
             <tbody>
               {categories.map((category, id) => (
                 <tr key={id}>
+                  <td className="border-b border-[#eee] px-2 py-5 pl-9 dark:border-strokedark xl:pl-11">
+                    {editingCategoryId === category.id ? (
+                      <div>
+                        {editingCategoryIcon ? (
+                          // Si une nouvelle icône a été sélectionnée, affichez-la
+                          <img
+                            src={editingCategoryIcon}
+                            alt="Icon Preview"
+                            className="w-16 h-16 cursor-pointer"
+                            onClick={() => {
+                              // Permet à l'utilisateur de modifier l'icône
+                              setEditingCategoryIcon('');
+                            }}
+                          />
+                        ) : (
+                          // Sinon, affichez l'icône existante avec une option de modification
+                          <img
+                            src={category.icon || '/default-icon.svg'}
+                            alt="Category Icon"
+                            className="w-16 h-16 cursor-pointer"
+                            onClick={() => {
+                              setEditingIcon(true); // Active le mode d'édition de l'icône
+                            }}
+                          />
+                        )}
+
+                        {/* Champ de téléchargement pour changer l'icône */}
+                        {editingIcon && (
+                          <input
+                            type="file"
+                            accept=".svg"
+                            onChange={handleEditIconUpload}
+                            className="mt-2 w-full text-xs lg:text-sm"
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      <div>
+                        <img
+                          src={category.icon || '/default-icon.svg'}
+                          alt="Category Icon"
+                          className="w-6 h-6"
+                        />
+                      </div>
+                    )}
+                  </td>
+
                   <td className="border-b border-[#eee] px-2 py-5 pl-9 dark:border-strokedark xl:pl-11">
                     {editingCategoryId === category.id ? (
                       <input
@@ -185,7 +293,7 @@ const CategoriesPage = () => {
                         <div className="space-x-3.5">
                           <button
                             onClick={() =>
-                              handleEditCategory(category.id, category.name)
+                              handleEditCategory(category.id, category.name, category.icon)
                             }
                             className="hover:text-primary">
                             <CiEdit style={{ fontSize: '20px', strokeWidth: 0.5 }} />
@@ -222,8 +330,8 @@ const CategoriesPage = () => {
                           </button>
                         </div>
                       )}
-                    </div>     
-                 </td>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

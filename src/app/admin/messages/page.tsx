@@ -172,7 +172,7 @@ const ContactsPage = () => {
                     className="z-999 flex items-center justify-center"
                 >
                     <Modal.Header>
-                        <p className="text-lg font-semibold text-gray-800 p-4">Contact's details</p>
+                        <p className="text-lg font-semibold text-gray-800 p-4">Contact&apos;s details</p>
                     </Modal.Header>
                     <Modal.Body>
                         <div className="p-4 space-y-4">

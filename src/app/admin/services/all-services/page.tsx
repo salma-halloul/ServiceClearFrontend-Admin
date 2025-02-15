@@ -6,8 +6,9 @@ import { RootState, useAppDispatch } from "@/redux/store";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import DeleteModal from "@/components/Modals/DeleteModal";
-import { deleteMultipleServices, fetchServices } from "@/redux/actions/serviceAction";
+import { deleteMultipleServices } from "@/redux/actions/serviceAction";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 
 const ServicesPage = () => {
@@ -149,7 +150,13 @@ const ServicesPage = () => {
                                     <td
                                         onClick={() => handleServiceClick(service.id)}
                                         className="border-b border-[#eee] px-2 py-5 pl-0 lg:pl-9 dark:border-strokedark xl:pl-11 lg:flex gap-2 ">
-                                        <img src={service.images[0]} alt={service.name} className="h-6 w-6 lg:h-9 lg:w-9 object-cover cursor-pointer" />
+                                        <Image
+                                            src={service.images[0]}
+                                            alt={service.name}
+                                            width={36}
+                                            height={36}
+                                            className="lg:h-9 lg:w-9 object-cover cursor-pointer"
+                                        />
                                         <h5 className="lg:font-medium xl:font-medium font-normal text-black text-xs lg:text-sm dark:text-white cursor-pointer hover:underline">
                                             {service.name}
                                         </h5>

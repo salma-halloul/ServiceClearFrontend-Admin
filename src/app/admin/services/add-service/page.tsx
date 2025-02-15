@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import MultiSelect from "@/components/Elements/Multiselect";
-import Switcher from "@/components/Elements/Switcher";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { FaCamera } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,7 +10,7 @@ import { AppDispatch, RootState } from "@/redux/store";
 import { fetchAllCategories } from "@/redux/actions/categoryAction";
 import { toast } from "react-toastify";
 import { createService } from "@/redux/actions/serviceAction";
-import Link from "next/link";
+import Image from "next/image";
 
 const AddServicePage = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -21,6 +20,7 @@ const AddServicePage = () => {
 
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
+    const [shortDescription, setShortDescription] = useState('');
     const [imagesBase64, setImagesBase64] = useState<string[]>([]);
     const [visible, setVisible] = useState(false);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -61,6 +61,10 @@ const AddServicePage = () => {
             toast.error('Please fill the description field');
             return
         }
+        if(!shortDescription){
+            toast.error('Please fill the short description field');
+            return
+        }
         if(selectedCategories.length === 0){
             toast.error('Please select at least one category');
             return
@@ -73,6 +77,7 @@ const AddServicePage = () => {
         const serviceData = {
             name,
             description,
+            shortDescription,
             images: imagesBase64,
             visible,
             categoryIds: selectedCategories,
@@ -85,6 +90,7 @@ const AddServicePage = () => {
             // Réinitialiser les champs de formulaire
             setName('');
             setDescription('');
+            setShortDescription('');
             setImagesBase64([]);
             setVisible(false);
             setSelectedCategories([]);
@@ -120,6 +126,19 @@ const AddServicePage = () => {
                                             required
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
+                                            type="text"
+                                            className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                                            Short description
+                                        </label>
+                                        <input
+                                            required
+                                            value={shortDescription}
+                                            onChange={(e) => setShortDescription(e.target.value)}
                                             type="text"
                                             className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
@@ -240,7 +259,14 @@ const AddServicePage = () => {
                                     </div>
                                     <div className="mt-4 flex flex-wrap gap-2">
                                         {imagesBase64.map((image, index) => (
-                                            <img key={index} src={image} alt={`Service ${index + 1}`} className="w-20 h-20 object-cover rounded-md" />
+                                            <Image
+                                                key={index}
+                                                src={image}
+                                                alt={`Service ${index + 1}`}
+                                                width={80}
+                                                height={80}
+                                                className="object-cover rounded-md"
+                                            />
                                         ))}
                                     </div>
                                 </div>
