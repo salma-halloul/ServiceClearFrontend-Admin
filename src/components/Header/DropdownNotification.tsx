@@ -1,19 +1,72 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import ClickOutside from "../ClickOutside";
+import { RootState, useAppDispatch } from "@/redux/store";
+import { fetchNotification, markAllAsRead } from "@/redux/actions/notificationAction";
+import { useSelector } from "react-redux";
+import { formatDistanceToNow } from "date-fns"; 
+import { useRouter } from "next/navigation";
 
 const DropdownNotification = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [notifying, setNotifying] = useState(true);
+  const [notifying, setNotifying] = useState(false);
+  const { notifications, loading, error } = useSelector((state: RootState) => state.notification);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+
+  useEffect(() => {
+    dispatch(fetchNotification());
+  }, [dispatch]);
+
+    // Mettre à jour `notifying` en fonction des notifications non lues
+    useEffect(() => {
+      if (notifications.length > 0) {
+        const hasUnreadNotifications = notifications.some(
+          (notification) => !notification.read
+        );
+        setNotifying(hasUnreadNotifications);
+      } else {
+        setNotifying(false); // Pas de notifications => notifying à false
+      }
+    }, [notifications]);
+
+    const handleCloseDropdown = () => {
+      if (notifying) {
+        dispatch(markAllAsRead()).then(() => {
+          dispatch(fetchNotification()); // Rafraîchir les notifications
+          setNotifying(false); // Désactiver l'indicateur de notification
+        });
+      }
+      setDropdownOpen(false); // Fermer le dropdown
+    };
+
+  // Gérer le clic sur le bouton de notification
+  const handleNotificationClick = () => {
+    if (dropdownOpen) {
+      handleCloseDropdown(); // Fermer le dropdown et marquer comme lues
+    } else {
+      setDropdownOpen(true); // Ouvrir le dropdown
+    }
+  };  
+
+  const handleNotificationItemClick = (notification : Notification) => {
+    if (notification.type === 'contact') {
+      router.push('/admin/messages');
+    } else if (notification.type === 'quote') {
+      router.push('/admin/quotes');
+    }
+  };
+
+  const sortedNotifications = [...notifications].sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
 
   return (
-    <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
+    <ClickOutside  onClick={handleCloseDropdown} className="relative">
       <li>
         <Link
-          onClick={() => {
-            setNotifying(false);
-            setDropdownOpen(!dropdownOpen);
-          }}
+          onClick={handleNotificationClick}
           href="#"
           className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
         >
@@ -51,69 +104,35 @@ const DropdownNotification = () => {
             </div>
 
             <ul className="flex h-auto flex-col overflow-y-auto">
-              <li>
-                <Link
-                  className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  href="#"
-                >
-                  <p className="text-sm">
-                    <span className="text-black dark:text-white">
-                      Edit your information in a swipe
-                    </span>{" "}
-                    Sint occaecat cupidatat non proident, sunt in culpa qui
-                    officia deserunt mollit anim.
-                  </p>
-
-                  <p className="text-xs">12 May, 2025</p>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  href="#"
-                >
-                  <p className="text-sm">
-                    <span className="text-black dark:text-white">
-                      It is a long established fact
-                    </span>{" "}
-                    that a reader will be distracted by the readable.
-                  </p>
-
-                  <p className="text-xs">24 Feb, 2025</p>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  href="#"
-                >
-                  <p className="text-sm">
-                    <span className="text-black dark:text-white">
-                      There are many variations
-                    </span>{" "}
-                    of passages of Lorem Ipsum available, but the majority have
-                    suffered
-                  </p>
-
-                  <p className="text-xs">04 Jan, 2025</p>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  href="#"
-                >
-                  <p className="text-sm">
-                    <span className="text-black dark:text-white">
-                      There are many variations
-                    </span>{" "}
-                    of passages of Lorem Ipsum available, but the majority have
-                    suffered
-                  </p>
-
-                  <p className="text-xs">01 Dec, 2024</p>
-                </Link>
-              </li>
+              {loading ? (
+                <li className="px-4.5 py-3">Loading notifications...</li>
+              ) : error ? (
+                <li className="px-4.5 py-3 text-red-500">{error}</li>
+              ) : notifications.length > 0 ? (
+                sortedNotifications.map((notification) => (
+                  <li key={notification.id}>
+                      <div
+                      onClick={() => handleNotificationItemClick(notification)} // Gérer le clic sur la notification
+                      className={`flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 ${
+                        !notification.read ? "bg-gray-100 dark:bg-gray-700" : ""
+                      } cursor-pointer`} // Ajoutez cursor-pointer pour indiquer que c'est cliquable
+                    >
+                      <p className="text-sm">
+                        <span className="text-black dark:text-white">
+                          {notification.message}
+                        </span>
+                      </p>
+                      <p className="text-xs">
+                      {formatDistanceToNow(new Date(notification.createdAt), {
+                          addSuffix: true, 
+                        })}                
+                      </p>
+                    </div>
+                  </li>
+                ))
+              ) : (
+                <li className="px-4.5 py-3">No notifications found.</li>
+              )}
             </ul>
           </div>
         )}

@@ -19,6 +19,7 @@
     "@types/redux": "^3.6.0",
     "apexcharts": "^4.3.0",
     "axios": "^1.7.9",
+    "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.5.2",
     "flowbite-react": "^0.10.2",
     "js-cookie": "^3.0.5",

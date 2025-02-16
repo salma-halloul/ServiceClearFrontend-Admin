@@ -7,6 +7,7 @@ import userReducer from "./slices/userSlice";
 import reviewReducer from "./slices/reviewSlice";
 import contactReducer from "./slices/contactSlice";
 import quoteReducer from "./slices/quoteSlice";
+import notificationReducer from "./slices/notificationSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage"; // Utilisation de localStorage
 import {
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   review: reviewReducer,
   contact: contactReducer,
   quote: quoteReducer,
+  notification : notificationReducer,
 });
 
 // Configuration de redux-persist

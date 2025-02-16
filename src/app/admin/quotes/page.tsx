@@ -74,20 +74,22 @@ const QuotesPage = () => {
             <Breadcrumb pageName="All quotes" />
             {error && (
                 <div className="text-red-500 mb-3">
-                    {error}
+                    {typeof error === 'string' ? error : JSON.stringify(error)}
                 </div>
             )}
             <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
                 <div className="max-w-full overflow-x-auto">
-                    <div className="flex justify-between items-center mb-4">
-                        <div className=" flex space-x-2">
+                    <div className="flex flex-col lg:flex-row justify-between items-center mb-4">
+                        <div className="w-full lg:w-1/3 mb-4 lg:mb-0">
                             <input
                                 type="text"
                                 placeholder="Search"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="px-4 py-2 border rounded-md w-1/4"
+                                className="px-4 py-2 border rounded-md w-full"
                             />
+                        </div>
+                        <div className="flex flex-wrap gap-2 items-center">
                             <button
                                 onClick={() => handleFilterByStatus('all')}
                                 className={`lg:px-4 lg:py-2 px-2 py-1 text-xs dark:text-black lg:text-sm font-sans font-semibold rounded ${statusFilter === 'all' ? 'bg-gray-300' : 'bg-gray-100 hover:bg-gray-200'}`}
@@ -107,41 +109,46 @@ const QuotesPage = () => {
                                 Approved
                             </button>
                             <button
+                                onClick={() => handleFilterByStatus("Completed")}
+                                className={`lg:px-4 lg:py-2 px-2 py-1 text-xs dark:text-black lg:text-sm font-sans font-semibold rounded ${statusFilter === "Completed" ? 'bg-blue-300' : 'bg-gray-100 hover:bg-gray-200'}`}
+                            >
+                                Completed
+                            </button>
+                            <button
                                 onClick={() => handleFilterByStatus("Rejected")}
                                 className={`lg:px-4 lg:py-2 px-2 py-1 text-xs dark:text-black lg:text-sm font-sans font-semibold rounded ${statusFilter === "Rejected" ? 'bg-red-300' : 'bg-gray-100 hover:bg-gray-200'}`}
                             >
                                 Rejected
                             </button>
                             <select
-                              value={sortMessage}
-                              onChange={(e) => setSortMessage(e.target.value)} 
-                                className="rounded-full bg-opacity-10 px-3 py-1 text-xs lg:text-sm lg:font-medium xl:font-medium font-normal"
+                                value={sortMessage}
+                                onChange={(e) => setSortMessage(e.target.value)}
+                                className="rounded-full bg-opacity-10 px-3 py-1 text-xs lg:text-sm lg:font-medium xl:font-medium font-normal border"
                             >
                                 <option value="desc">Recent</option>
                                 <option value="asc">Oldest</option>
                             </select>
                         </div>
-
                     </div>
                     <table className="w-full table-auto">
                         <thead>
                             <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                                <th className="py-4 px-2 text-md lg:text-base xl:text-base lg:font-medium xl:font-medium font-normal text-black dark:text-white">
+                                <th className="py-4 px-2 text-sm lg:text-base xl:text-base lg:font-medium xl:font-medium font-normal text-black dark:text-white">
                                     ID
                                 </th>
-                                <th className="py-4 px-2  text-md lg:text-base xl:text-base  lg:font-medium xl:font-medium font-normal text-black dark:text-white">
+                                <th className="py-4 px-2  text-sm lg:text-base xl:text-base  lg:font-medium xl:font-medium font-normal text-black dark:text-white">
                                     Customer Name
                                 </th>
-                                <th className="py-4 px-2  text-md lg:text-base xl:text-base  lg:font-medium xl:font-medium font-normal text-black dark:text-white">
+                                <th className="py-4 px-2  text-sm lg:text-base xl:text-base  lg:font-medium xl:font-medium font-normal text-black dark:text-white">
                                     Customer Email
                                 </th>
-                                <th className="py-4  text-md lg:text-base xl:text-base  lg:font-medium xl:font-medium font-normal text-black dark:text-white">
-                                   Created at
+                                <th className="py-4 px-2 text-sm lg:text-base xl:text-base  lg:font-medium xl:font-medium font-normal text-black dark:text-white">
+                                    Created at
                                 </th>
-                                <th className="py-4 px-2   text-md lg:text-base xl:text-base lg:font-medium xl:font-medium font-normal text-black dark:text-white">
+                                <th className="py-4 px-2   text-sm lg:text-base xl:text-base lg:font-medium xl:font-medium font-normal text-black dark:text-white">
                                     Services
                                 </th>
-                                <th className="py-4 px-2  text-md lg:text-base xl:text-base lg:font-medium xl:font-medium font-normal text-black dark:text-white">
+                                <th className="py-4 px-2  text-sm lg:text-base xl:text-base lg:font-medium xl:font-medium font-normal text-black dark:text-white">
                                     Status
                                 </th>
                             </tr>
@@ -196,15 +203,16 @@ const QuotesPage = () => {
                                             >
                                                 <option value="Pending">Pending</option>
                                                 <option value="Approved">Approved</option>
+                                                <option value="Completed">Completed</option>
                                                 <option value="Rejected">Rejected</option>
                                             </select>
                                         ) : (
                                             <p
-                                                className={`inline-flex rounded-full bg-opacity-10 px-3 py-1 text-xs lg:text-sm ${!quote.read ? "font-bold" : "lg:font-medium xl:font-medium font-normal" } cursor-pointer ${quote.status === 'Pending'
-                                                        ? 'bg-warning text-warning'
-                                                        : quote.status === 'Approved'
-                                                            ? 'bg-success text-success'
-                                                            : 'bg-danger text-danger'
+                                                className={`inline-flex rounded-full bg-opacity-10 px-3 py-1 text-xs lg:text-sm ${!quote.read ? "font-bold" : "lg:font-medium xl:font-medium font-normal" } cursor-pointer 
+                                                   ${quote.status === 'Pending'? 'bg-warning text-warning'
+                                                    : quote.status === 'Approved'? 'bg-success text-success'
+                                                    : quote.status === 'Completed'? 'bg-blue-400 text-blue-600'
+                                                    : 'bg-danger text-danger'
                                                     }`}
                                                 onClick={() => handleStatusClick(quote.id, quote.status)}
                                             >
