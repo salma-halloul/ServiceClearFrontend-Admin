@@ -72,7 +72,7 @@ const Settings = () => {
     <DefaultLayout>
       <div className="mx-auto max-w-270">
         <Breadcrumb pageName="Settings" />
-        {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="text-red-500">{typeof error === 'string' ? error : JSON.stringify(error)}</p>}
         <div className="grid grid-cols-5 gap-8">
           <div className="col-span-5 xl:col-span-2">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">

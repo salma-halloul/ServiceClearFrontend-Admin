@@ -17,6 +17,9 @@ import { fetchServices } from "@/redux/actions/serviceAction";
 const BasicChartPage: React.FC = () => {
     const dispatch = useAppDispatch();
     const services = useSelector((state: RootState) => state.service.services);
+    const quotes = useSelector((state: RootState) => state.quote.quotes);
+    const messages = useSelector((state: RootState) => state.contact.contacts);
+    const reviews = useSelector((state: RootState) => state.review.reviews);
     const totalServices = services.length;
     const totalQuotes = useSelector((state: RootState) => state.quote.quotes.length);
     const totalMessages = useSelector((state: RootState) => state.contact.contacts.length);
@@ -25,13 +28,14 @@ const BasicChartPage: React.FC = () => {
 
     useEffect(() => {
         if (!hasFetched.current) {
-            dispatch(fetchContacts());
-            dispatch(fetchQuotes());
-            dispatch(fetchReviews());
-            dispatch(fetchServices());
-        hasFetched.current = true;
+            if (services.length === 0) dispatch(fetchServices());
+            if (quotes.length === 0) dispatch(fetchQuotes());
+            if (messages.length === 0) dispatch(fetchContacts());
+            if (reviews.length === 0) dispatch(fetchReviews());
+
+            hasFetched.current = true;
         }
-      }, [dispatch]);
+    }, [dispatch, services, quotes, messages, reviews]);
 
     return (
         <DefaultLayout>

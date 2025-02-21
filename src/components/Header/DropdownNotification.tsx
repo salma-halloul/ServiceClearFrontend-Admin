@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import ClickOutside from "../ClickOutside";
 import { RootState, useAppDispatch } from "@/redux/store";
 import { fetchNotification, markAllAsRead } from "@/redux/actions/notificationAction";
 import { useSelector } from "react-redux";
@@ -13,9 +12,13 @@ const DropdownNotification = () => {
   const { notifications, loading, error } = useSelector((state: RootState) => state.notification);
   const dispatch = useAppDispatch();
   const router = useRouter();
-
+  const hasFetched = useRef(false);
+  
   useEffect(() => {
-    dispatch(fetchNotification());
+    if (!hasFetched.current) {
+      dispatch(fetchNotification());
+      hasFetched.current = true;
+    }
   }, [dispatch]);
 
     // Mettre à jour `notifying` en fonction des notifications non lues
@@ -63,7 +66,7 @@ const DropdownNotification = () => {
 
 
   return (
-    <ClickOutside  onClick={handleCloseDropdown} className="relative">
+    < >
       <li>
         <Link
           onClick={handleNotificationClick}
@@ -137,7 +140,7 @@ const DropdownNotification = () => {
           </div>
         )}
       </li>
-    </ClickOutside>
+    </>
   );
 };
 
