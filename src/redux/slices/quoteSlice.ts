@@ -9,6 +9,7 @@ interface QuoteState {
   loading: boolean;
   error: string | null;
   status: "idle" | "loading" | "failed";
+  lastFetched : number | null;
 }
 
 const initialState: QuoteState = {
@@ -18,6 +19,7 @@ const initialState: QuoteState = {
   loading: false,
   error: null,
   status: "idle",
+  lastFetched: null
 };
 
 
@@ -49,12 +51,13 @@ const quoteSlice = createSlice({
       })
       .addCase(fetchQuotes.fulfilled, (state, action) => {
         state.loading = false;
-        state.quotes = action.payload;
+        state.quotes = action.payload.data;
+        state.lastFetched = action.payload.lastFetched;
         state.status = "idle";
       })
       .addCase(fetchQuotes.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch quotes';
+        state.error = action.payload as string || 'Failed to fetch quotes';
         state.status = "failed";
       })
       .addCase(deleteMultipleQuotes.pending, (state) => {

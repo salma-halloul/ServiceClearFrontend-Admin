@@ -1,19 +1,27 @@
 import axiosInstance from "@/api/axiosInstance";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { RootState } from "../store";
 
 export const fetchContacts = createAsyncThunk(
-    '/contact/all',
-    async (_, thunkAPI) => {
-      try {
-        const response = await axiosInstance.get('/contact/getall');
-        console.log(response.data);
-        return response.data;
-      } catch (error: any) {
-        const errorMessage = error.response.data.message;
-        return thunkAPI.rejectWithValue(errorMessage);
-      }
+  "contacts/fetchAll",
+  async (_, { getState, rejectWithValue }) => {
+    const state = getState() as RootState;
+    const now = Date.now();
+
+    // Vérifier si les contacts ont été récupérés récemment (moins de 60s)
+    if (state.contact.lastFetched && now - state.contact.lastFetched < 60000) {
+      return rejectWithValue("Contacts already up-to-date");
     }
+
+    try {
+      const response = await axiosInstance.get("/contact/getall");
+      return { data: response.data, lastFetched: now }; // Retourne aussi lastFetched
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch contacts");
+    }
+  }
 );
+
 
 export const getContactById = createAsyncThunk(
     '/contact/get',

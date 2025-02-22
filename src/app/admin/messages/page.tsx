@@ -3,7 +3,7 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { RootState, useAppDispatch } from "@/redux/store";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {  fetchContacts, updateContactReadStatus } from "@/redux/actions/contactAction";
@@ -18,6 +18,14 @@ const ContactsPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
     const [modalMessage, setModalMessage] = useState<Contact | null>(null);
+    const hasFetched = useRef(false);
+
+    useEffect(() => {
+        if (!hasFetched.current) {
+            dispatch(fetchContacts());
+            hasFetched.current = true;
+        }
+    }, [dispatch]);
     
   const handleMessageClick = (contact: Contact) => {
     if (!contact.read) {
@@ -30,7 +38,6 @@ const ContactsPage = () => {
     const handleFilterByStatus = (status: string) => {
         setStatusFilter(status);
     };
-
 
 
     const sortedContacts = [...contacts].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -52,7 +59,7 @@ const ContactsPage = () => {
     return (
         <DefaultLayout>
             <Breadcrumb pageName="All contacts" />
-            {error && (
+            {error && error !== "Contacts already up-to-date" && (
                 <div className="text-red-500 mb-3">
                     {error}
                 </div>

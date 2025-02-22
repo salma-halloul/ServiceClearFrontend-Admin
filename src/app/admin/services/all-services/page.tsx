@@ -6,7 +6,7 @@ import { RootState, useAppDispatch } from "@/redux/store";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import DeleteModal from "@/components/Modals/DeleteModal";
-import { deleteMultipleServices } from "@/redux/actions/serviceAction";
+import { deleteMultipleServices, fetchServices } from "@/redux/actions/serviceAction";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -18,15 +18,22 @@ const ServicesPage = () => {
     const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
     const [statusFilter, setStatusFilter] = useState<boolean | 'all'>('all'); 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    
+
+    useEffect(() => {
+        dispatch(fetchServices());
+    }, [dispatch]);
+
     const handleFilterByStatus = (status: boolean | 'all') => {
         setStatusFilter(status);
     };
 
-    const filteredServices = services.filter((service) => {
+    const filteredServices = Array.isArray(services) ? services.filter((service) => {
         if (statusFilter === 'all') return true;
         return service.visible === statusFilter;
-    });
+    }) : [];
+
+    console.log(filteredServices);
+
 
     const handleNewServiceClick = () => {
         router.push('/admin/services/add-service');
@@ -70,7 +77,7 @@ const ServicesPage = () => {
     return (
         <DefaultLayout>
             <Breadcrumb pageName="All services" />
-            {error && (
+            {error && error !== "Services already up-to-date" && (
                 <div className="text-red-500 mb-3">
                     {error}
                 </div>

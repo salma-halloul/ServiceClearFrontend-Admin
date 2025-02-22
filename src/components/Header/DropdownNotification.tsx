@@ -5,6 +5,7 @@ import { fetchNotification, markAllAsRead } from "@/redux/actions/notificationAc
 import { useSelector } from "react-redux";
 import { formatDistanceToNow } from "date-fns"; 
 import { useRouter } from "next/navigation";
+import { updateNotificationsStateAsRead } from "@/redux/slices/notificationSlice";
 
 const DropdownNotification = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -36,12 +37,14 @@ const DropdownNotification = () => {
     const handleCloseDropdown = () => {
       if (notifying) {
         dispatch(markAllAsRead()).then(() => {
-          dispatch(fetchNotification()); // Rafraîchir les notifications
-          setNotifying(false); // Désactiver l'indicateur de notification
+          // Mettre à jour immédiatement les notifications dans Redux
+          dispatch(updateNotificationsStateAsRead());
+          setNotifying(false); // Désactiver la notification
         });
       }
       setDropdownOpen(false); // Fermer le dropdown
     };
+    
 
   // Gérer le clic sur le bouton de notification
   const handleNotificationClick = () => {
@@ -107,35 +110,45 @@ const DropdownNotification = () => {
             </div>
 
             <ul className="flex h-auto flex-col overflow-y-auto">
-              {loading ? (
-                <li className="px-4.5 py-3">Loading notifications...</li>
-              ) : error ? (
-                <li className="px-4.5 py-3 text-red-500">{error}</li>
-              ) : notifications.length > 0 ? (
-                sortedNotifications.map((notification) => (
-                  <li key={notification.id}>
-                      <div
-                      onClick={() => handleNotificationItemClick(notification)} // Gérer le clic sur la notification
-                      className={`flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 ${
-                        !notification.read ? "bg-gray-100 dark:bg-gray-700" : ""
-                      } cursor-pointer`} // Ajoutez cursor-pointer pour indiquer que c'est cliquable
-                    >
-                      <p className="text-sm">
-                        <span className="text-black dark:text-white">
-                          {notification.message}
-                        </span>
-                      </p>
-                      <p className="text-xs">
-                      {formatDistanceToNow(new Date(notification.createdAt), {
-                          addSuffix: true, 
-                        })}                
-                      </p>
-                    </div>
-                  </li>
-                ))
-              ) : (
-                <li className="px-4.5 py-3">No notifications found.</li>
+              {error && error !== "Notifications already up-to-date" && (
+                <div className="text-red-500 mb-3">
+                  {error}
+                </div>
               )}
+
+              {loading && (
+                <div className="text-black dark:text-white">
+                  Loading notifications...
+                </div>
+              )}
+
+              {notifications.length === 0 && !loading && (
+                <div className="text-black dark:text-white">
+                  No notifications
+                </div>
+              )}
+
+              {sortedNotifications.map((notification) => (
+                <li key={notification.id}>
+                  <div
+                    onClick={() => handleNotificationItemClick(notification)} // Gérer le clic sur la notification
+                    className={`flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 ${!notification.read ? "bg-gray-100 dark:bg-gray-700" : ""
+                      } cursor-pointer`} // Ajoutez cursor-pointer pour indiquer que c'est cliquable
+                  >
+                    <p className="text-sm">
+                      <span className="text-black dark:text-white">
+                        {notification.message}
+                      </span>
+                    </p>
+                    <p className="text-xs">
+                      {formatDistanceToNow(new Date(notification.createdAt), {
+                        addSuffix: true,
+                      })}
+                    </p>
+                  </div>
+                </li>
+              ))
+              }
             </ul>
           </div>
         )}

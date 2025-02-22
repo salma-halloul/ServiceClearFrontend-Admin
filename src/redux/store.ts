@@ -18,7 +18,6 @@ const rootReducer = combineReducers({
   contact: contactReducer,
   quote: quoteReducer,
   notification : notificationReducer,
-
 });
 
 

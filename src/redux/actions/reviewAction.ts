@@ -1,17 +1,24 @@
 import axiosInstance from "@/api/axiosInstance";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { RootState } from "../store";
 
-  export const fetchReviews = createAsyncThunk(
-    '/review/all',
-    async (_, thunkAPI) => {
-      try {
-        const response = await axiosInstance.get('/review/all');
-        return response.data;
-      } catch (error: any) {
-        const errorMessage = error.response.data.message;
-        return thunkAPI.rejectWithValue(errorMessage);
-      }
+export const fetchReviews = createAsyncThunk(
+  "reviews/fetchAll",
+  async (_, { getState, rejectWithValue }) => {
+    const state = getState() as RootState;
+    const now = Date.now();
+
+    if (state.review.lastFetched && now - state.review.lastFetched < 60000) {
+      return rejectWithValue("Reviews already up-to-date");
     }
+
+    try {
+      const response = await axiosInstance.get("/review/all");
+      return { data: response.data, lastFetched: now };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch reviews");
+    }
+  }
 );
 
 export const updateReview = createAsyncThunk(

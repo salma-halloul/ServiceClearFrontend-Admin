@@ -4,7 +4,7 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { createCategory, deleteCategory, fetchAllCategories, updateCategory } from "@/redux/actions/categoryAction";
 import { RootState, useAppDispatch } from "@/redux/store";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { CiEdit } from 'react-icons/ci';
@@ -23,6 +23,14 @@ const CategoriesPage = () => {
     const [editingIcon, setEditingIcon] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
+    const hasFetched = useRef(false);
+    
+  useEffect(() => {
+    if (!hasFetched.current) {
+      dispatch(fetchAllCategories());
+      hasFetched.current = true;
+    }
+  }, [dispatch]);
 
     const handleDeleteCategory = (categoryId: string) => {
         setCategoryToDelete(categoryId);
@@ -46,10 +54,6 @@ const CategoriesPage = () => {
         setShowModal(false);
         setCategoryToDelete(null);
     };
-
-    useEffect(() => {
-        dispatch(fetchAllCategories());
-    }, [dispatch]);
 
     const handleAddCategory = () => {
         setIsAddingCategory(true);
@@ -349,3 +353,4 @@ const handleUpdateCategory = async () => {
 };
 
 export default CategoriesPage;
+

@@ -7,6 +7,7 @@ interface ContactState {
   loading: boolean;
   error: string | null;
   status: "idle" | "loading" | "failed";
+  lastFetched: number | null;
 }
 
 const initialState: ContactState = {
@@ -15,6 +16,7 @@ const initialState: ContactState = {
   loading: false,
   error: null,
   status: "idle",
+  lastFetched: null
 };
 
 
@@ -46,12 +48,13 @@ const contactSlice = createSlice({
       })
       .addCase(fetchContacts.fulfilled, (state, action) => {
         state.loading = false;
-        state.contacts = action.payload;
+        state.contacts = action.payload.data;
+        state.lastFetched = action.payload.lastFetched; 
         state.status = "idle";
       })
       .addCase(fetchContacts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch contacts';
+        state.error = action.payload as string || 'Failed to fetch contacts';
         state.status = "failed";
       })
       .addCase(deleteMultipleContacts.pending, (state) => {

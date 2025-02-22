@@ -8,6 +8,7 @@ interface ServiceState {
   loading: boolean;
   error: string | null;
   status: "idle" | "loading" | "failed";
+  lastFetched : number | null;
 }
 
 const initialState: ServiceState = {
@@ -16,6 +17,7 @@ const initialState: ServiceState = {
   loading: false,
   error: null,
   status: "idle",
+  lastFetched: null
 };
 
 
@@ -48,11 +50,12 @@ const serviceSlice = createSlice({
       .addCase(fetchServices.fulfilled, (state, action) => {
         state.loading = false;
         state.services = action.payload.data;
+        state.lastFetched = action.payload.lastFetched; 
         state.status = "idle";
       })
       .addCase(fetchServices.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch services';
+        state.error = action.payload as string || 'Failed to fetch services';
         state.status = "failed";
       })
       .addCase(createService.pending, (state) => {

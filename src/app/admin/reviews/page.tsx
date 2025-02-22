@@ -27,15 +27,20 @@ const ReviewsPage = () => {
     const [name, setName] = useState('');
     const hasFetchedReviews = useRef(false);
 
+    useEffect(() => {
+        if (!hasFetchedReviews.current) {
+            dispatch(fetchReviews());
+            hasFetchedReviews.current = true;
+        }
+    }, [dispatch]);
 
-    
- const handleAddNoteClick = () => {
-    setIsModalOpen2(true);
-  };
-  
-  const handleCloseModal = () => {
-    setIsModalOpen2(false);
-  };
+    const handleAddNoteClick = () => {
+        setIsModalOpen2(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen2(false);
+    };
 
     const handleSaveNote = async (e: any) => {
         e.preventDefault();
@@ -63,7 +68,7 @@ const ReviewsPage = () => {
         try {
             dispatch(updateReview({ reviewId: reviewId, status: newStatus }));
             toast.success('Review status updated successfully!');
-        }catch (error) {
+        } catch (error) {
             toast.error('Failed to update review status. Please try again !');
         }
         setEditingStatusId(null);
@@ -73,12 +78,6 @@ const ReviewsPage = () => {
         setStatusFilter(status);
     };
 
-    useEffect(() => {
-        if (!hasFetchedReviews.current) {
-          dispatch(fetchReviews());
-          hasFetchedReviews.current = true;
-        }
-      }, [dispatch]);
 
     const handleCheckboxChange = (id: string) => {
         setSelectedReviewIds((prevSelected) =>
@@ -145,7 +144,7 @@ const ReviewsPage = () => {
     return (
         <DefaultLayout>
             <Breadcrumb pageName="All reviews" />
-            {error && (
+            {error && error !== "Reviews already up-to-date" && (
                 <div className="text-red-500 mb-3">
                     {error}
                 </div>

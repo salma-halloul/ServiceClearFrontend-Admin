@@ -3,7 +3,7 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { RootState, useAppDispatch } from "@/redux/store";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {  fetchQuotes, updateQuote, updateQuoteReadStatus } from "@/redux/actions/quoteAction";
@@ -21,7 +21,14 @@ const QuotesPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
     const [modalMessage, setModalMessage] = useState<Quote | null>(null);
+    const hasFetched = useRef(false);
 
+    useEffect(() => {
+        if (!hasFetched.current) {
+            dispatch(fetchQuotes());
+            hasFetched.current = true;
+        }
+    }, [dispatch]);
 
     const handleStatusClick = (quoteId: string, currentStatus: string) => {
         setEditingStatusId(quoteId);
@@ -72,9 +79,10 @@ const QuotesPage = () => {
     return (
         <DefaultLayout>
             <Breadcrumb pageName="All quotes" />
-            {error && (
+            {error && error !== "Quotes already up-to-date" && (
                 <div className="text-red-500 mb-3">
-                    {typeof error === 'string' ? error : JSON.stringify(error)}
+                    {error}
+                    {/* {typeof error === 'string' ? error : JSON.stringify(error)} */}
                 </div>
             )}
             <div className="rounded-sm border border-stroke bg-white px-5 pb-2.5 pt-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">

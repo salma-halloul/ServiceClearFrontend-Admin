@@ -6,6 +6,7 @@ interface ReviewState {
   loading: boolean;
   error: string | null;
   status: "idle" | "loading" | "failed";
+  lastFetched: number | null;
 }
 
 const initialState: ReviewState = {
@@ -13,6 +14,7 @@ const initialState: ReviewState = {
   loading: false,
   error: null,
   status: "idle",
+  lastFetched: null
 };
 
 const reviewSlice = createSlice({
@@ -29,7 +31,8 @@ const reviewSlice = createSlice({
       })
       .addCase(fetchReviews.fulfilled, (state, action) => {
         state.loading = false;
-        state.reviews = action.payload;
+        state.reviews = action.payload.data;
+        state.lastFetched = action.payload.lastFetched; 
         state.status = "idle";
       })
       .addCase(fetchReviews.rejected, (state, action) => {

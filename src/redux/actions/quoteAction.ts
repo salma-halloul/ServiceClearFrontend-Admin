@@ -1,18 +1,24 @@
 import axiosInstance from "@/api/axiosInstance";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { RootState } from "../store";
 
 export const fetchQuotes = createAsyncThunk(
-    '/quote/all',
-    async (_, thunkAPI) => {
-      try {
-        const response = await axiosInstance.get('/quote/getall');
-        console.log(response.data);
-        return response.data;
-      } catch (error: any) {
-        const errorMessage = error.response.data.message;
-        return thunkAPI.rejectWithValue(errorMessage);
-      }
+  "quotes/fetchAll",
+  async (_, { getState, rejectWithValue }) => {
+    const state = getState() as RootState;
+    const now = Date.now();
+
+    if (state.quote.lastFetched && now - state.quote.lastFetched < 60000) {
+      return rejectWithValue("Quotes already up-to-date");
     }
+
+    try {
+      const response = await axiosInstance.get("/quote/getall");
+      return { data: response.data, lastFetched: now };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch quotes");
+    }
+  }
 );
 
 export const getQuoteById = createAsyncThunk(
