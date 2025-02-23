@@ -13,9 +13,7 @@ const LoginPage =() => {
     const [password, setPassword] = useState('');
     const dispatch = useAppDispatch();
     const loginError = useSelector((state: RootState) => state.auth.error);
-    console.log('loginError:', loginError);
     const router = useRouter();
-  
   
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -38,7 +36,7 @@ const LoginPage =() => {
             alt="Logo"
           />
         </div>
-        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark  lg:w-1/3">
             <div className="border-b border-stroke px-6.5 py-4 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
                 Sign In
@@ -105,12 +103,6 @@ const LoginPage =() => {
                     <p>Remember me</p>
                   </label>
 
-                  <Link
-                    href="#"
-                    className="text-sm text-primary ml-30 hover:underline"
-                  >
-                    Forget password?
-                  </Link>
                 </div>
 
                 {loginError && (
