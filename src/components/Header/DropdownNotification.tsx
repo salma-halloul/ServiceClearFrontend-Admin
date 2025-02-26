@@ -69,7 +69,7 @@ const DropdownNotification = () => {
 
 
   return (
-    < >
+    <div className="relative" >
       <li>
         <Link
           onClick={handleNotificationClick}
@@ -153,7 +153,7 @@ const DropdownNotification = () => {
           </div>
         )}
       </li>
-    </>
+    </div>
   );
 };
 

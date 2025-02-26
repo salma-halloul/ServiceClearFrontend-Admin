@@ -8,7 +8,7 @@ export const login = createAsyncThunk(
       try {
         const response = await axiosInstance.post('/auth/login', { identifier, password });
         console.log('response data token:', response.data.token);
-        Cookies.set('session_id', response.data.token, { expires: 30 }); 
+        Cookies.set('sessionId_sc', response.data.token, { expires: 30 }); 
         return response.data.token;
       } catch (error:any) {
         return thunkAPI.rejectWithValue(error.response?.data?.message || 'An error occurred');
@@ -17,7 +17,7 @@ export const login = createAsyncThunk(
 );
 
 export const logout = createAsyncThunk('auth/logout', async () => {
-  Cookies.remove('session_id');
+  Cookies.remove('sessionId_sc');
   return true;
 }
 );

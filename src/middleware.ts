@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import store from "@/redux/store";
-import { verifyToken } from "@/redux/actions/authAction";
+
 
 export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -29,26 +28,10 @@ export default async function middleware(req: NextRequest) {
   const isProtectedRoute = /^\/admin(?!\/login).*/.test(pathname);
 
   if (isProtectedRoute) {
-    const token = req.cookies.get("session_id")?.value;
+    const token = req.cookies.get("sessionId_sc")?.value;
 
     if (!token) {
       console.log("Token absent, redirection vers la page d'accueil.");
-      return NextResponse.redirect(new URL("/", req.nextUrl.origin));
-    }
-
-    try {
-      const resultAction = await store.dispatch(verifyToken({ token }));
-      const decodedPayload = resultAction.payload?.payload;
-
-      if (decodedPayload) {
-        console.log("Payload valide :", decodedPayload);
-        return NextResponse.next();
-      } else {
-        console.log("Payload absent, redirection vers la page d'accueil.");
-        return NextResponse.redirect(new URL("/", req.nextUrl.origin));
-      }   
-    } catch (error) {
-      console.error("Erreur lors de la vérification du token :", error);
       return NextResponse.redirect(new URL("/", req.nextUrl.origin));
     }
   }

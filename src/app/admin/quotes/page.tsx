@@ -238,8 +238,9 @@ const QuotesPage = () => {
                 <Modal
                     show={isMessageModalOpen}
                     onClose={() => setIsMessageModalOpen(false)}
-                    className="z-999 flex items-center justify-center"
+                    className="fixed inset-0 flex items-center justify-center z-999 w-full h-full"
                 >
+                    <div>
                     <Modal.Header>
                         <p className="text-lg font-semibold text-gray-800 p-4">Quote&apos;s details</p>
                     </Modal.Header>
@@ -301,6 +302,7 @@ const QuotesPage = () => {
                             Close
                         </button>
                     </Modal.Footer>
+                    </div>
                 </Modal>
             )}
         </DefaultLayout>
